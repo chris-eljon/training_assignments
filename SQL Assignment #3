@@ -1,0 +1,165 @@
+Oracle Assignment: 3
+Table Name: salesman_master
+Description: Use to store information about salesman working in the company
+Column Name	Data Type	Size	Attributes
+salesman_no	Varchar	6	Primary key/first letter must start with ‘S’
+salesman_name	Varchar	20	not null
+Address1	Varchar	30	not null
+Address2	Varchar	30	
+city	Varchar	20	
+pincode	Varchar	6	
+state	Varchar	20	
+sal_amt	number	8,2	not null, cannot be 0
+tgt_to_get	number	6,2	not null, cannot be 0
+ytd_sales	number	6,2	not null
+remarks	Varchar	60	
+ANSWER:
+CREATE table SALESMAN_MASTER( SALESMAN_NO VARCHAR(6) PRIMARYKEY CONSTRAINT START_S(salesman_no LIKE'S%'), SALESMAN_MAN VARCHAR(20) NOT NULL, ADDRESS1 VARCHAR(30) NOT NULL, CITY VARCHAR(20), PINCODE VARCHAR(6), "STATE" VARCHAR(20), SAL_AMT NUMBER(8,2)NOT NULL CONSTRAINT SALCHEKNOTZERO CHECK(SAL_AMT!=0), TGT_TO_GET NUMBER(6,2)NOT NULL CONSTRAINT TGTCHECKNOTZERO CHECK(TGT_TO_GET!=0), YTD_SALES NUMBER(6,2) NOT NULL, REMARKS VARCHAR(60));
+
+Table Name: sales_order
+Description: Use to store information about order
+Column Name	Data Type	Size	Attributes
+s_order_no	Varchar	6	Primary key/first letter must start with ‘O’
+s_order_date	Datetime		
+client_no	Varchar	6	Foreign key references client_no of client_master table
+dely_addr	Varchar	25	
+salesman_no	Varchar	6	Foreign key references salesman_no of salesman_master table
+dely_type	Char	1	Default ‘F’,delivery :part (P) / full (F)
+billed_yn	Char	1	delivery :part (Y) / full (N), Default ‘N’
+dely_date	Date		cannot be less than s_order_date
+order_status	Varchar	10	values (‘in process’, ’Fulfilled’, ’BackOrder’, ’Canceled’)
+	ANSWER: 
+	Create table SALES_ORDER (S_ORDER_NO VARCHAR(6) PRIMARY KEY CONSTRAINT 	START_IN_O CHECK(S_ORDER_NO LIKE 'O%'), S_ORDER_DATE DATE DEFAULT '10-MAY-96', 	CLIENT_NO VARCHAR(6)  REFERENCES CLIENT_MASTER(CLIENT_NO), DELY_ADDR 	VARCHAR(25), SALESMAN_NO VARCHAR(6) REFERENCES SALESMAN_MASTER(SALESMAN_NO), 	BILLED_YN CHAR(1) DEFAULT 'N', DELY_DATE DATE , ORDER_STATUS VARCHAR(10), 	CONSTRAINT CHECK_DATE CHECK(DELY_DATE>S_ORDER_DATE), CONSTRAINT CHECK_Y_N 	CHECK (BILLED_YN = ANY('Y','N')), CONSTRAINT ORDER_STAT_CHECK CHECK(ORDER_STATUS = 	ANY('in process','FullFilled', 'BackOrder', 'Canceled')));
+
+Table Name: sales_order_details
+	Description: Use to store information about products ordered.
+Column Name	Data Type	Size	Attributes
+s_order_no	Varchar	6	Foreign key references s_order_no of sales_order table
+product_no	Varchar	6	Foreign key references product_no of product_master table
+qty_ordered	Numeric	8	
+qty_disp	Numeric	8	
+product_rate	Numeric	10,2	
+ANSWER:
+CREATE TABLE SALES_ORDER_DETAILS (S_ORDER_NO VARCHAR(6) REFERENCES SALES_ORDER TABLE, PRODUCT_NO VARCHAR(6) REFERENCES 	PRODUCT_MASTER TABLE, QTY_ORDERED NUMBER(8), QTY_DISP NUMBER(8), PRODUCT_RATE NUMBER(10,2));
+
+3. Data for salesman_master table:  
+Salesman_ no	Salesman_ name	Address1	Address2	City	Pin code	State	sal_amt	Tgt_to Get	Ytd sales	Remarks
+S00001	Kiran	A/14	Worli	Bombay	400002	MAH	3000	100	50	Good
+S00002	Manish	65	Nariman	Bombay	400001	MAH	3000	200	100	Good
+S00003	Ravi	P-7	Bandra	Bombay	400032	MAH	3000	200	100	Good
+ S00004	Ashish	A/5	Juhu	Bombay	400044	MAH	3500	200	150	Good
+ANSWER: 
+INSERT ALL INTO salesman_master (salesman_no, salesman_name, address1, address2, city,pincode,state,sal_amt,tgt_to_get,ytd_sales, remarks)  VALUES('S00001', 'Kiran', 'A/14', 'Worli', 'Bombay', '400002', 'MAH', '3000', '100', '50', 'Good') INTO salesman_master (salesman_no, salesman_name, address1, address2, city,pincode,state,sal_amt,tgt_to_get,ytd_sales, remarks) VALUES('S00002', 'Manish', '65', 'Nariman', 'Bombay', '400001', 'MAH', '3000', '200', '50', 'Good') INTO salesman_master (salesman_no, salesman_name, address1, address2, city,pincode,state,sal_amt,tgt_to_get,ytd_sales, remarks) VALUES('S00003', 'Ravi', 'P-7', 'Bandra', 'Bombay', '400032', 'MAH', '3000', '200', '50', 'Good') INTO salesman_master (salesman_no, salesman_name, address1, address2, city,pincode,state,sal_amt,tgt_to_get,ytd_sales, remarks)  VALUES('S00004', 'Ashish', 'A/5', 'Juhu', 'Bombay', '400004', 'MAH', '3500', '200', '50', 'Good') SELECT * FROM dual 
+	
+4. Data for sales_ordertable:
+S_order_no	S_order_date	Client No	Dely Type	Bill Yn	salesman no	Dely Date	Order Status
+O19001	12-Jan-2021	C00001	F	N	S00001	20-Jan-2021	IP
+O19002	25-Jan-2021	C00002	P	N	S00002	27-Jan-2021	C
+O46865	18-Feb-2021	C00003	F	Y	S00003	20-Feb-2021	F
+O19003	03-Apr-2021	C00001	F	Y	S00001	07-Apr-2021	F
+O46866	20-May-2021	C00004	P	N	S00002	22-May-2021	C
+O10008	24-May-2021	C00005	F	N	S00004	26-May-2021	IP
+ANSWER:
+INSERT INTO SALES_ORDER
+VALUES ('O19001','12-JAN-2021','C00001','F','N','S00001','20-JAN-2021', 'in process');
+INSERT INTO SALES_ORDER
+VALUES ('O19002','25-JAN-2021','C00002','P','N','S00002','27-JAN-2021', 'Cancelled');
+INSERT INTO SALES_ORDER
+VALUES ('O46865','18-FEB-2021','C00003','F','Y','S00003','20-FEB-2021', 'FullFilled');
+INSERT INTO SALES_ORDER
+VALUES ('O19003','03-APR-2021','C00001','F','Y','S00001','07-APR-2021', 'FullFilled');
+INSERT INTO SALES_ORDER
+VALUES ('O46866','20-MAY-2021','C00004','P','N','S00002','22-MAY-2021', 'Cancelled');
+INSERT INTO SALES_ORDER
+VALUES ('O10008','24-MAY-2021','C00005','F','N','S00004','26-MAY-2021', 'in process');
+
+5. Data for sales_order_details table:
+s_order_no	product_no	Qty ordered	qty_Disp	Product rate
+O19001	P00001	4	4	525
+O19001	P07965	2	1	8400
+O19001	P07885	2	1	5250
+O19002	P00001	10	0	525
+O46865	P07868	3	3	3150
+O46865	P07885	3	1	5250
+O46865	P00001	10	10	525
+O46865	P03453	4	4	1050
+O19003	P03453	2	2	1050
+O19003	P06734	1	1	12000
+O46866	P07965	1	0	8400
+O46866	P07975	1	0	1050
+O10008	P00001	10	5	525
+O10008	P07975	5	3	1050
+ANSWER:
+INSERT INTO SALES_ORDER_DETAILS
+VALUES ('O19001','P00001',4,4,525);
+INSERT INTO SALES_ORDER_DETAILS
+VALUES ('O19001','P07965',2,1,8400);
+INSERT INTO SALES_ORDER_DETAILS
+VALUES ('O19001','P07885',2,1,5250);
+INSERT INTO SALES_ORDER_DETAILS
+VALUES ('O19002','P00001',10,0,525);
+INSERT INTO SALES_ORDER_DETAILS
+VALUES ('O46865','P07868',3,3,3150);
+INSERT INTO SALES_ORDER_DETAILS
+VALUES ('O46865','P07885',3,1,5250);
+INSERT INTO SALES_ORDER_DETAILS
+VALUES ('O46865','P00001',10,10,525);
+INSERT INTO SALES_ORDER_DETAILS
+VALUES ('O46865','P03453',4,4,1050);
+INSERT INTO SALES_ORDER_DETAILS
+VALUES ('O19003','P03453',2,2,1050);
+INSERT INTO SALES_ORDER_DETAILS
+VALUES ('O19003','P06734',1,1,12000);
+INSERT INTO SALES_ORDER_DETAILS
+VALUES ('O46866','P07965',1,0,8400);
+INSERT INTO SALES_ORDER_DETAILS
+VALUES ('O46866','P07975',1,0,1050);
+INSERT INTO SALES_ORDER_DETAILS
+VALUES ('O10008','P00001',10,5,525);
+INSERT INTO SALES_ORDER_DETAILS
+VALUES ('O10008','P07975',5,3,1050);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
